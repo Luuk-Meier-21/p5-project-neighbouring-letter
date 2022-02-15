@@ -13,7 +13,7 @@
  * b: Bridge B, a cell acting as a bridge between C and N (C.x, N.y)
  */
 
- function Cell(x, y, w, h) {
+function Cell(x, y, w, h) {
     this.x = x;
     this.y = y;
     this.w = w;
@@ -22,86 +22,80 @@
     this.color = "transparent";
     this.corners = [0, 0, 0, 0];
 
+    const drawBridge = () => {
+        // Never forget x2, y2, x3, y3 bezier points are not relative but absolute!
+        
+        const s = size / 2;
+        const c = bezier
+
+        push();
+        translate(s, 0)
+        beginShape();
+        vertex(0, 0);
+        bezierVertex(c, 0, s, c, s, s);
+        vertex(s, 0);
+        endShape(CLOSE);
+        pop();
+    }
+
+    const drawCell = () => {
+        const s = size;     // Size
+        const c = this.corners;
+        fill(this.color)
+        rect(0, 0, this.w, this.h, c[3], c[0], c[1], c[2]);
+    }
+
     this.draw = () => {
         this.update();
-        
-        const cell = this.state === "bridge" ? this.drawBridge : this.drawCell;
+        const cell = this.state === "bridge" ? drawBridge : drawCell;
         push();
-        
         translate(this.x * size, this.y * size);
         cell();
         pop();
     }
 
-    this.cleanCell = () => {
-        fill("transparent")
-        rect(0, 0, this.w, this.h);
-    }
-
-    this.drawCell = () => {
-        const s = size;     // Size
-        const c = this.corners;
-        if (this.state === "active") console.log(c)
-        this.cleanCell();
-        fill(this.color)
-        rect(0, 0, this.w, this.h, c[3], c[0], c[1], c[2]);
-    }
-
-    this.drawBridge = () => {
-        const p = this.getActiveCorners(this.x, this.y)
-            .map((a, i) => a ? i : undefined)
-            .filter(a => a !== undefined);
-        const s = size / 2;
-        const c = bezier;
-        this.cleanCell();
-        fill(0)
-        for (let i = 0; i < p.length; i++) {
-            push();
-            rotateCenter(size, size, p[i] * 90)
-            translate(s, 0)
-            beginShape();
-            vertex(0, 0);
-            bezierVertex(c, 0, s, c, s, s);
-            vertex(s, 0);
-            endShape(CLOSE);
-            pop();
-        }
-    }
-
-    this.update = (after = () => {}) => {
+    this.update = () => {
         switch (this.state) {
             case "default":
                 {
-                    this.corners = [0, 0, 0, 0];
+                    this.corners = [0, 0, 0, 0]
                     this.color = "transparent";
-                    after();
                 }
                 break;
             case "active":
                 {
                     this.corners = this.getCornerCurve();
-                    console.log(this.corners);
                     this.updateBridges();
                     this.color = 0;
-                    after();
                 }
                 break;
             case "bridge":
                 {
                     this.updateBridges();
                     this.color = 200;
-                    after();
                 }
                 break;
         }
     }
 
     this.interactionUpdate = () => {
-        
         this.updateBridges();
         this.corners = this.getCornerCurve();
+        console.log(this.corners, this.state);
         this.update();
-        this.draw();
+    }
+
+    this.drawBridge = () => {
+        const p = this.getActiveCorners(this.x, this.y)
+            .map((a, i) => a ? i : undefined)
+            .filter(a => a !== undefined);
+
+        for (let i = 0; i < p.length; i++) {
+            push();
+            rotateCenter(size, size, p[i] * 90)
+            drawBridge();
+            pop();
+        }
     }
 
     this.getCornerCurve = () => this.getFreeCorners().map(a => a ? bezier : 0);

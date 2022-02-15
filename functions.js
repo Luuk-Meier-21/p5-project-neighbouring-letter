@@ -10,6 +10,12 @@ function fromCenter(w, h, onCenter) {
   translate(-w / 2, -h / 2);
 }
 
+function isolate(callback) {
+  push();
+  callback();
+  pop();
+}
+
 
 // for json.js
 class Counter {

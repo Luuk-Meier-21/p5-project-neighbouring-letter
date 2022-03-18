@@ -16,6 +16,10 @@ function isolate(callback) {
   pop();
 }
 
+function forceNewFrame() {
+  loop();
+  noLoop();
+}
 
 // for json.js
 class Counter {

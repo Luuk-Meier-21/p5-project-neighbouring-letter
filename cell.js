@@ -29,7 +29,11 @@
         push();
         
         translate(this.x * size, this.y * size);
-        cell();
+        switch (this.state) {
+            case "active": this.drawActiveCell(); break;
+            case "bridge": this.drawBridge(); break;
+            case "default": this.drawCell(); break;
+        }
         pop();
     }
 
@@ -40,11 +44,19 @@
 
     this.drawCell = () => {
         const s = size;     // Size
-        const c = this.corners;
-        if (this.state === "active") console.log(c)
         this.cleanCell();
-        fill(this.color)
+        fill(255)
+        rect(0, 0, this.w, this.h);
+    }
+
+    this.drawActiveCell = () => {
+        const s = size;     // Size
+        const c = roundCorners ? this.corners : [0, 0, 0, 0];
+        this.cleanCell();
+        push();
+        fill(0)
         rect(0, 0, this.w, this.h, c[3], c[0], c[1], c[2]);
+        pop();
     }
 
     this.drawBridge = () => {
@@ -52,19 +64,21 @@
             .map((a, i) => a ? i : undefined)
             .filter(a => a !== undefined);
         const s = size / 2;
-        const c = bezier;
+        const c = bezier / 2;
         this.cleanCell();
-        fill(0)
-        for (let i = 0; i < p.length; i++) {
-            push();
-            rotateCenter(size, size, p[i] * 90)
-            translate(s, 0)
-            beginShape();
-            vertex(0, 0);
-            bezierVertex(c, 0, s, c, s, s);
-            vertex(s, 0);
-            endShape(CLOSE);
-            pop();
+        if (showBridges) {
+            fill(0)
+            for (let i = 0; i < p.length; i++) {
+                push();
+                rotateCenter(size, size, p[i] * 90)
+                translate(s, 0)
+                beginShape();
+                vertex(0, 0);
+                bezierVertex(s-c, 0, s, c, s, s);
+                vertex(s, 0);
+                endShape(CLOSE);
+                pop();
+            }
         }
     }
 
@@ -80,7 +94,6 @@
             case "active":
                 {
                     this.corners = this.getCornerCurve();
-                    console.log(this.corners);
                     this.updateBridges();
                     this.color = 0;
                     after();
@@ -97,7 +110,6 @@
     }
 
     this.interactionUpdate = () => {
-        
         this.updateBridges();
         this.corners = this.getCornerCurve();
         this.update();

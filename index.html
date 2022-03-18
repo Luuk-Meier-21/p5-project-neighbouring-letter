@@ -1,31 +1,77 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <title>Pixel Blob Machine</title>
         <link rel="stylesheet" href="style.css">
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-        <script>
-            function accessInjectedProp(propName) {
-                let prop = data[propName];
-                if (prop) {
-                    return prop
-                } else {
-                    let message = `Failed to access property by propery name: (${propName})`
-                    if (typeof logger !== 'undefined') {
-                        logger(message)
-                    }
-                    console.error(message)
-                }
+        <style>
+            * {
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
             }
-        </script>
+
+            html {
+                font-family: Helvetica, Arial, sans-serif;
+                font-size: 14px;
+            }
+
+            body {
+                background-color: #E2E1DF;
+                display: flex;
+                justify-content: center;
+                padding: 1rem;
+                line-height: 1.15;
+            }
+
+            h1, h2, h3, h4, p {
+                margin: 0;
+                padding: 0;
+            }
+
+            h1 {
+                letter-spacing: -.07em;
+                font-size: 2rem;
+            }
+
+            p {
+                margin-bottom: .5rem;
+            }
+
+            #info {
+                margin-bottom: 1rem;
+            }
+
+            #signature {
+                margin-bottom: 1rem;
+            }
+
+            #canvas-wrapper {
+                border: 1px solid black;
+                background-color: white;
+            }
+        </style>
+        <section>
+            <article id="info">
+                <h1>Pixel Blob Machine</h1>
+                <p id="signature">By Luuk Meier</p>
+                <p>Press <i>space bar</i> to toggle grid.</p>
+                <p>Export as .SVG:</p>
+                <button id="export-btn">Export</button>
+                <button id="save-btn">Save</button>
+                <button id="refresh-btn">Reload</button>
+                <button id="reset-btn">Reset</button>
+            </article>
+            <div id="canvas-wrapper"></div>
+        </section>
         <script src="p5.js" ></script>
         <script src="https://unpkg.com/p5.js-svg@1.1.1"></script>
         <script src="json.js" ></script>
         <script src="functions.js" ></script>
         <script src="cell.js" ></script>
+        <script src="settings.js" ></script>
         <script src="main.js" ></script>
-        
     </body>
 </html>
 
